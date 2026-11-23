@@ -1,0 +1,351 @@
+<div
+  class="modal-backdrop"
+  (click)="close()"
+>
+  <div
+    class="order-modal"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- HEADER -->
+    <div class="modal-header">
+
+      <div class="header-icon">
+        <span>+</span>
+      </div>
+
+      <div class="header-text">
+        <h2>Create New Order</h2>
+        <p>Reserve a product and complete your order</p>
+      </div>
+
+      <button
+        type="button"
+        class="close-button"
+        (click)="close()"
+      >
+        &times;
+      </button>
+
+    </div>
+
+
+    <!-- LOADING -->
+    <div
+      class="loading"
+      *ngIf="loadingProducts()"
+    >
+      <div class="spinner"></div>
+      <span>Loading available products...</span>
+    </div>
+
+
+    <!-- SUCCESS -->
+    <div
+      class="success-state"
+      *ngIf="!loadingProducts() && orderCreated()"
+    >
+
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <h3>Order Created Successfully</h3>
+
+      <p>
+        Your order has been reserved and payment will be
+        automatically detected.
+      </p>
+
+      <button
+        type="button"
+        class="success-button"
+        (click)="close()"
+      >
+        Done
+      </button>
+
+    </div>
+
+
+    <!-- FORM -->
+    <div
+      class="modal-content"
+      *ngIf="!loadingProducts() && !orderCreated()"
+    >
+
+      <!-- ERROR -->
+      <div
+        class="error-message"
+        *ngIf="errorMessage()"
+      >
+        <span>!</span>
+        {{ errorMessage() }}
+      </div>
+
+
+      <!-- CUSTOMER -->
+      <div class="form-group">
+
+        <label>
+          Customer Name
+        </label>
+
+        <div class="input-wrapper">
+
+          <span class="input-icon">👤</span>
+
+          <input
+            type="text"
+            placeholder="Enter customer name"
+            [value]="customerName()"
+            (input)="customerName.set($any($event.target).value)"
+          />
+
+        </div>
+
+      </div>
+
+
+      <!-- CATEGORY -->
+      <div class="form-group">
+
+        <label>
+          Category
+        </label>
+
+        <div class="select-wrapper">
+
+          <select
+            [value]="selectedCategoryId() ?? ''"
+            (change)="selectCategory($any($event.target).value)"
+          >
+
+            <option value="">
+              Select a category
+            </option>
+
+            <option
+              *ngFor="let category of categories()"
+              [value]="category.id"
+            >
+              {{ category.name }}
+            </option>
+
+          </select>
+
+          <span class="select-arrow">⌄</span>
+
+        </div>
+
+      </div>
+
+
+      <!-- PRODUCT -->
+      <div class="form-group">
+
+        <label>
+          Product
+        </label>
+
+        <div class="select-wrapper">
+
+          <select
+            [value]="selectedProductId() ?? ''"
+            [disabled]="selectedCategoryId() === null"
+            (change)="selectProduct($any($event.target).value)"
+          >
+
+            <option value="">
+              {{
+                selectedCategoryId() === null
+                  ? 'Select a category first'
+                  : 'Select a product'
+              }}
+            </option>
+
+            <option
+              *ngFor="let product of filteredProducts()"
+              [value]="product.id"
+            >
+              {{ product.name }}
+            </option>
+
+          </select>
+
+          <span class="select-arrow">⌄</span>
+
+        </div>
+
+      </div>
+
+
+      <!-- PRODUCT INFO -->
+      <div
+        class="product-info"
+        *ngIf="selectedProduct() as product"
+      >
+
+        <div class="product-main">
+
+          <div class="product-avatar">
+            {{ product.name.charAt(0) }}
+          </div>
+
+          <div>
+
+            <span class="product-name">
+              {{ product.name }}
+            </span>
+
+            <span class="product-category">
+              {{ product.categoryName }}
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="product-price">
+          {{ product.price | number:'1.2-2' }}
+        </div>
+
+      </div>
+
+
+      <!-- STOCK + QUANTITY -->
+      <div
+        class="quantity-section"
+        *ngIf="selectedProduct() as product"
+      >
+
+        <div class="stock-info">
+
+          <span class="stock-label">
+            Available stock
+          </span>
+
+          <span
+            class="stock-badge"
+            [class.low-stock]="product.stock <= 10"
+          >
+            {{ product.stock }} available
+          </span>
+
+        </div>
+
+
+        <div class="quantity-control">
+
+          <button
+            type="button"
+            (click)="decreaseQuantity()"
+            [disabled]="quantity() <= 1"
+          >
+            −
+          </button>
+
+          <span>
+            {{ quantity() }}
+          </span>
+
+          <button
+            type="button"
+            (click)="increaseQuantity()"
+            [disabled]="quantity() >= product.stock"
+          >
+            +
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- TOTAL -->
+      <div
+        class="total-card"
+        *ngIf="selectedProduct()"
+      >
+
+        <div>
+          <span class="total-label">
+            Order Total
+          </span>
+
+          <span class="total-description">
+            {{ quantity() }} × {{ selectedProduct()?.name }}
+          </span>
+        </div>
+
+        <strong>
+          {{ totalPrice() | number:'1.2-2' }}
+        </strong>
+
+      </div>
+
+
+      <!-- NOTICE -->
+      <div class="reservation-notice">
+
+        <div class="notice-icon">
+          ✓
+        </div>
+
+        <div>
+          <strong>
+            Stock will be reserved
+          </strong>
+
+          <p>
+            Your Order is reserved and payment will be
+            automatically detected.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <div
+      class="modal-footer"
+      *ngIf="!loadingProducts() && !orderCreated()"
+    >
+
+      <button
+        type="button"
+        class="cancel-button"
+        (click)="close()"
+        [disabled]="creatingOrder()"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="create-button"
+        [disabled]="!canCreateOrder() || creatingOrder()"
+        (click)="createOrder()"
+      >
+
+        <span
+          class="button-spinner"
+          *ngIf="creatingOrder()"
+        ></span>
+
+        <span *ngIf="!creatingOrder()">
+          Create Order
+        </span>
+
+        <span *ngIf="creatingOrder()">
+          Creating...
+        </span>
+
+      </button>
+
+    </div>
+
+  </div>
+</div>

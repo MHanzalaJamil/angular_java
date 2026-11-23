@@ -1,0 +1,21 @@
+<div
+  class="toast"
+  [class.success]="type() === 'success'"
+  [class.error]="type() === 'error'"
+>
+  <div class="toast-icon">
+    {{ type() === 'success' ? '✓' : '!' }}
+  </div>
+
+  <div class="toast-message">
+    {{ message() }}
+  </div>
+
+  <button
+    type="button"
+    class="toast-close"
+    (click)="close()"
+  >
+    ×
+  </button>
+</div>

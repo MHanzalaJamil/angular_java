@@ -1,0 +1,61 @@
+.btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Green */
+.btn-green {
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: #ffffff;
+  background-color: #2e7d32;
+  transition: background-color 0.2s ease;
+}
+
+.btn-green:hover {
+  background-color: #1b5e20;
+}
+
+.btn-green:active {
+  background-color: #144718;
+}
+
+/* Red */
+.btn-red {
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: #ffffff;
+  background-color: #d32f2f;
+  transition: background-color 0.2s ease;
+}
+
+.btn-red:hover {
+  background-color: #c62828;
+}
+
+.btn-red:active {
+  background-color: #9a0007;
+}
+
+/* Link */
+.btn-link {
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}

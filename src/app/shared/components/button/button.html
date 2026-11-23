@@ -1,0 +1,10 @@
+<button
+  type="button"
+  class="btn"
+  [class.btn-green]="variant() === 'green'"
+  [class.btn-red]="variant() === 'red'"
+  [class.btn-link]="variant() === 'link'"
+  (click)="onClick()"
+>
+  {{ label() }}
+</button>

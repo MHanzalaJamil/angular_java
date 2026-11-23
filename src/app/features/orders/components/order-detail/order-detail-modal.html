@@ -1,0 +1,55 @@
+<div class="modal-backdrop" (click)="close()">
+  <div class="order-modal" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-text">
+        <h2>Order Details</h2>
+        <p *ngIf="order()" class="order-subtitle">Order #{{ order()?.id }}</p>
+      </div>
+      <button type="button" class="close-button" (click)="close()" aria-label="Close modal">
+        &times;
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" *ngIf="loading()">
+      <div class="spinner"></div>
+      <span>Loading order details...</span>
+    </div>
+
+    <!-- Order Details -->
+    <div class="modal-body" *ngIf="!loading() && order() as currentOrder">
+      <div class="order-detail">
+        <span class="detail-label">Order ID</span>
+        <span class="detail-value badge">{{ currentOrder.id }}</span>
+      </div>
+
+      <div class="order-detail">
+        <span class="detail-label">Customer</span>
+        <span class="detail-value">{{ currentOrder.customerName }}</span>
+      </div>
+
+      <div class="order-detail">
+        <span class="detail-label">Product</span>
+        <span class="detail-value mono">{{ product()?.name || 'Loading...' }}</span>
+      </div>
+
+      <div class="order-detail">
+        <span class="detail-label">Quantity</span>
+        <span class="detail-value">{{ currentOrder.quantity }}</span>
+      </div>
+
+      <div class="order-detail total">
+        <span class="detail-label">Total Price</span>
+        <span class="detail-value total-price">
+          {{ currentOrder.totalPrice | number: '1.2-2' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button type="button" class="close-modal-button" (click)="close()">Close</button>
+    </div>
+  </div>
+</div>

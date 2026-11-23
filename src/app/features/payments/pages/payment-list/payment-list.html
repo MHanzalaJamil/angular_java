@@ -1,0 +1,83 @@
+<div class="payments-page">
+  <div class="page-header">
+    <div>
+      <h1>Payments</h1>
+      <p>View all payments and their corresponding orders</p>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Payment ID</th>
+          <th>Order</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let payment of payments()">
+          <td>{{ payment.paymentId }}</td>
+
+          <td>
+            <app-button
+              [label]="'Order #' + payment.orderId"
+              variant="link"
+              (clicked)="openOrder(payment.orderId)"
+            ></app-button>
+          </td>
+
+          <td>
+            {{ payment.amount | number: '1.2-2' }}
+          </td>
+
+          <td>
+            <span
+              class="status"
+              [class.success]="payment.status === 'PAID'"
+              [class.failed]="payment.status === 'FAILED'"
+              [class.pending]="payment.status === 'PENDING'"
+            >
+              {{ payment.status }}
+            </span>
+          </td>
+        </tr>
+
+        <tr *ngIf="payments().length === 0">
+          <td colspan="4" class="empty-state">No payments found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-section">
+    <div class="page-size">
+      <label for="pageSize"> Payments per page: </label>
+
+      <select
+        id="pageSize"
+        [value]="pageSize()"
+        (change)="changePageSize($any($event.target).value)"
+      >
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+
+    <div class="pagination">
+      <span> Page {{ currentPage() + 1 }} of {{ totalPages() }} </span>
+
+      <button (click)="previousPage()" [disabled]="currentPage() === 0">Previous</button>
+
+      <button (click)="nextPage()" [disabled]="currentPage() >= totalPages() - 1">Next</button>
+    </div>
+  </div>
+</div>
+<app-order-details-modal
+  *ngIf="showOrderModal()"
+  [orderId]="selectedOrderId()"
+  (closed)="closeOrder()"
+></app-order-details-modal>

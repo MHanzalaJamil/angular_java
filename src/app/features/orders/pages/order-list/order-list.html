@@ -1,0 +1,137 @@
+<div class="orders-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Orders</h1>
+      <p>View orders and their details.</p>
+    </div>
+
+    <app-button label="Create Order" variant="green" (clicked)="openCreateOrder()"></app-button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-panel">
+    <div class="search-field">
+      <label for="customerName">Customer Name</label>
+
+      <input
+        id="customerName"
+        type="text"
+        placeholder="Search customer..."
+        [(ngModel)]="searchCustomerName"
+      />
+    </div>
+
+    <div class="search-field">
+      <label for="product">Product</label>
+
+      <select id="product" [(ngModel)]="searchProductId">
+        <option [ngValue]="null">All Products</option>
+
+        <option *ngFor="let product of products()" [ngValue]="product.id">
+          {{ product.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="search-actions">
+      <app-button label="Search" variant="green" (clicked)="searchOrders()"></app-button>
+
+      <app-button label="Clear" variant="red" (clicked)="clearSearch()"></app-button>
+    </div>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let order of orders()">
+          <td>
+            <span class="order-id">#{{ order.id }}</span>
+          </td>
+
+          <td>
+            {{ order.customerName }}
+          </td>
+
+          <td>
+            {{ getProductName(order.productId) }}
+          </td>
+
+          <td>
+            {{ order.quantity }}
+          </td>
+
+          <td class="price">
+            {{ order.totalPrice | number: '1.0-0' }}
+          </td>
+          <td>
+            <span
+              class="status"
+              [class.pending]="order.status === 'PENDING'"
+              [class.confirmed]="order.status === 'CONFIRMED'"
+              [class.cancelled]="order.status === 'CANCELLED'"
+            >
+              {{ order.status }}
+            </span>
+          </td>
+        </tr>
+
+        <tr *ngIf="orders().length === 0">
+          <td colspan="6" class="empty-state">No orders found.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <div class="pagination-info">
+        <b> Showing {{ startOrder() }}–{{ endOrder() }} of {{ totalElements() }} orders </b>
+      </div>
+
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChanged)="goToPage($event)"
+      ></app-pagination>
+
+      <div class="page-size">
+        <label for="pageSize"> Orders per page:&nbsp;</label>
+        <select
+          id="pageSize"
+          [value]="pageSize()"
+          (change)="changePageSize($any($event.target).value)"
+        >
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Order Modal -->
+<app-create-order-modal
+  *ngIf="showCreateOrderModal()"
+  (closed)="closeCreateOrder()"
+  (created)="orderCreated($event)"
+></app-create-order-modal>
+@if (showToast()) {
+  <app-toast
+    [message]="toastMessage()"
+    [type]="toastType()"
+    (closed)="showToast.set(false)"
+  ></app-toast>
+}
